@@ -18,6 +18,8 @@ class CommonTextField extends StatefulWidget {
   final OnChangedCallback? onChangedCallback;
   final TextEditingController? inputBoxController;
   final bool autoValidation;
+  final bool emptyValidation;
+  final String emptyValidationText;
 
   const CommonTextField({
     super.key,
@@ -27,7 +29,7 @@ class CommonTextField extends StatefulWidget {
     this.validationLogic,
     this.onChangedCallback,
     this.onSaveFunction,
-    this.inputBoxController, this.autoValidation = true,
+    this.inputBoxController, this.autoValidation = true,  this.emptyValidation = true,  required this.emptyValidationText,
   });
 
   @override
@@ -69,6 +71,18 @@ class _CommonTextFieldState extends State<CommonTextField> {
                 ? AutovalidateMode.onUserInteraction
                 : AutovalidateMode.disabled,
             validator: (value) {
+              if (widget.emptyValidation) {
+                if (value!.isEmpty) {
+                  return widget.emptyValidationText ??
+                      "${widget.labelText} is required";
+                } else {
+                  return widget.validationLogic!(value);
+                }
+              } else {
+                if (value!.isNotEmpty) {
+                  return widget.validationLogic!(value);
+                }
+              }
               return null;
             },
             controller: widget.inputBoxController,

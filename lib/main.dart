@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kathir/screens/login_screen.dart';
 import 'package:kathir/screens/my_task_view_screen.dart';
 import 'package:kathir/theme/app_colors.dart';
 
@@ -19,38 +20,35 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => SafeArea(
-        bottom: true,
-        child: GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Field To-Do',
-          theme: ThemeData(
-            brightness: Brightness.light,
-            scaffoldBackgroundColor: Colors.white,
-            primaryColor: Colors.blue,
-            appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
-            floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: Colors.blue,
-            ),
+      () => GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Field To-Do',
+        theme: ThemeData(
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: Colors.white,
+          primaryColor: Colors.blue,
+          appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            backgroundColor: Colors.blue,
           ),
-          darkTheme: ThemeData(
-            brightness: Brightness.dark,
-            scaffoldBackgroundColor: Colors.black,
-            // Black background
-            primaryColor: AppColors.darkThemePrimary,
-            // Yellow primary in dark mode
-            appBarTheme: const AppBarTheme(backgroundColor: Colors.black),
-            floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: AppColors.darkThemePrimary,
-            ),
-            iconTheme: const IconThemeData(color: AppColors.darkThemePrimary),
-            textTheme: const TextTheme(
-              bodyMedium: TextStyle(color: Colors.white),
-            ),
-          ),
-          themeMode: themeController.themeMode,
-          home: const MyTaskViewScreen(),
         ),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: Colors.black,
+          // Black background
+          primaryColor: AppColors.darkThemePrimary,
+          // Yellow primary in dark mode
+          appBarTheme: const AppBarTheme(backgroundColor: Colors.black),
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            backgroundColor: AppColors.darkThemePrimary,
+          ),
+          iconTheme: const IconThemeData(color: AppColors.darkThemePrimary),
+          textTheme: const TextTheme(
+            bodyMedium: TextStyle(color: Colors.white),
+          ),
+        ),
+        themeMode: themeController.themeMode,
+        home: const LoginScreen(),
       ),
     );
   }

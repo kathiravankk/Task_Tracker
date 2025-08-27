@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kathir/common_widget/custom_button.dart';
-import 'package:kathir/common_widget/custom_rext_field.dart';
+import 'package:kathir/common_widget/custom_text_field.dart';
 import 'package:kathir/controller/task_controller.dart';
 import 'package:kathir/model/task_details_model.dart';
-import 'package:kathir/theme/app_colors.dart';
 
 class TaskEditAddBottomSheet extends StatelessWidget {
   final int? index;
@@ -34,20 +33,22 @@ class TaskEditAddBottomSheet extends StatelessWidget {
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           CommonTextField(
+            emptyValidationText: "Tile is required",
             inputBoxController: titleController,
             labelText: "Title",
-            validationLogic: (value){},
+            validationLogic: (value) {
+              value.isEmpty ? "Field is required" : null;
+            },
             hintText: "Enter title here..",
-            onChangedCallback: (value){},
-            onSaveFunction: (value){},
           ),
           CommonTextField(
+            emptyValidationText: "Description is required",
             inputBoxController: descController,
             labelText: "Description",
-            validationLogic: (value){},
+            validationLogic: (value) {
+              value.isEmpty ? "Field is required" : null;
+            },
             hintText: "Enter description here..",
-            onChangedCallback: (value){},
-            onSaveFunction: (value){},
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,

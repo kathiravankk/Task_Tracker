@@ -7,6 +7,7 @@ class TaskViewComponent extends StatelessWidget {
   final String taskTitle;
   final String description;
   final bool isCompleted;
+  final String role;
   final Function()? onChangedCallback;
   final Function()? onDeleteCallback;
   final Function()? editFunction;
@@ -18,7 +19,7 @@ class TaskViewComponent extends StatelessWidget {
     this.isCompleted = false,
     this.onChangedCallback,
     this.editFunction,
-    this.onDeleteCallback,
+    this.onDeleteCallback, required this.role,
   }) : super(key: key);
 
   final ThemeController themeController = Get.find<ThemeController>();
@@ -83,22 +84,28 @@ class TaskViewComponent extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  GestureDetector(
-                    onTap: editFunction!,
-                    child: Icon(
-                      Icons.edit,
-                      color: themeController.isDarkMode.value
-                          ? AppColors.darkThemePrimary
-                          : Colors.pink,
-                      size: 23,
+                  Visibility(
+                    visible: role == "Manager" || role == "Admin",
+                    child: GestureDetector(
+                      onTap: editFunction!,
+                      child: Icon(
+                        Icons.edit,
+                        color: themeController.isDarkMode.value
+                            ? AppColors.darkThemePrimary
+                            : Colors.blue,
+                        size: 23,
+                      ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: onDeleteCallback!,
-                    child: Icon(
-                      Icons.delete_forever_outlined,
-                      color: AppColors.cancelButtonColor,
-                      size: 23,
+                  Visibility(
+                    visible: role == "Admin",
+                    child: GestureDetector(
+                      onTap: onDeleteCallback!,
+                      child: Icon(
+                        Icons.delete_forever_outlined,
+                        color: AppColors.cancelButtonColor,
+                        size: 23,
+                      ),
                     ),
                   ),
                 ],

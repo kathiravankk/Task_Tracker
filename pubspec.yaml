@@ -38,6 +38,7 @@ dependencies:
   hive_flutter: ^1.1.0
   uuid: ^4.5.1
   hive: ^2.2.3
+  carousel_slider: ^5.1.1
 
 dev_dependencies:
   flutter_test:

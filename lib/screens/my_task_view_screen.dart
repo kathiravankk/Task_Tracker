@@ -11,7 +11,9 @@ import 'package:kathir/theme/app_colors.dart';
 import 'package:kathir/theme/icon_images.dart';
 
 class MyTaskViewScreen extends StatefulWidget {
-  const MyTaskViewScreen({super.key});
+  final Map<String, dynamic> roleObj;
+
+  const MyTaskViewScreen({super.key, required this.roleObj});
 
   @override
   State<MyTaskViewScreen> createState() => _MyTaskViewScreenState();
@@ -54,87 +56,106 @@ class _MyTaskViewScreenState extends State<MyTaskViewScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Row(
-          spacing: 10,
-          children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: AssetImage(IconImages.todoLogoImg),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  displayGreeting(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Row(
+            spacing: 10,
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(widget.roleObj["profile"]),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    displayGreeting(),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
-                ),
-                Text(
-                  "Task Tracker User!",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                  Text(
+                    "${widget.roleObj["role"]} ${widget.roleObj["name"]}!",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              onPressed: () => themeController.toggleTheme(),
+              icon: Obx(
+                () => Icon(
+                  themeController.isDarkMode.value
+                      ? Icons.light_mode
+                      : Icons.dark_mode_outlined,
+                  size: 25,
+                  color: Theme.of(context).iconTheme.color,
                 ),
-              ],
+              ),
             ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => themeController.toggleTheme(),
-            icon: Obx(
-              () => Icon(
-                themeController.isDarkMode.value
-                    ? Icons.light_mode
-                    : Icons.dark_mode_outlined,
+            IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: Icon(
+                Icons.logout,
                 size: 25,
                 color: Theme.of(context).iconTheme.color,
               ),
             ),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: CustomTabWidget(
-          tabController: _tabController,
-          activeBoxColor: Theme.of(context).primaryColor,
-          activeTextColor: themeController.isDarkMode.value
-              ? Colors.black
-              : Colors.white,
-          tabNames: tabNames,
-          tabPages: tabNames.map((element) => buildTaskWidget()).toList(),
+          ],
         ),
-      ),
-      floatingActionButton: CustomButton(
-        width: 150,
-        buttonFunction: () {
-          showModalBottomSheet(
-            backgroundColor: themeController.isDarkMode.value
-                ? AppColors.darkCardColor
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: CustomTabWidget(
+            tabController: _tabController,
+            activeBoxColor: Theme.of(context).primaryColor,
+            activeTextColor: themeController.isDarkMode.value
+                ? Colors.black
                 : Colors.white,
-            useSafeArea: true,
-            isDismissible: true,
-            showDragHandle: true,
-            context: context,
-            builder: (_) => TaskEditAddBottomSheet(),
-          );
-        },
-        buttonText: 'Add Task',
-        bgColor: Theme.of(context).primaryColor,
-        buttonIcon: Icon(
-          Icons.add,
-          size: 15,
-          color: themeController.isDarkMode.value ? Colors.black : Colors.white,
+            tabNames: tabNames,
+            tabPages: tabNames.map((element) => buildTaskWidget()).toList(),
+          ),
+        ),
+        floatingActionButton: Visibility(
+          visible: widget.roleObj["role"] != "User",
+          child: CustomButton(
+            width: 150,
+            buttonFunction: () {
+              showModalBottomSheet(
+                backgroundColor: themeController.isDarkMode.value
+                    ? AppColors.darkCardColor
+                    : Colors.white,
+                useSafeArea: true,
+                isDismissible: true,
+                showDragHandle: true,
+                context: context,
+                builder: (_) => TaskEditAddBottomSheet(),
+              );
+            },
+            buttonText: 'Add Task',
+            bgColor: Theme.of(context).primaryColor,
+            buttonIcon: Icon(
+              Icons.add,
+              size: 15,
+              color: themeController.isDarkMode.value
+                  ? Colors.black
+                  : Colors.white,
+            ),
+          ),
         ),
       ),
     );
@@ -142,15 +163,39 @@ class _MyTaskViewScreenState extends State<MyTaskViewScreen>
 
   Widget buildTaskWidget() {
     return Obx(() {
+      final tasks = filteredTasks(selectedIndex.value);
+
+      if (tasks.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(IconImages.emptyImg, height: 150, width: 150),
+              const SizedBox(height: 12),
+              Text(
+                "No Data Found!",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: themeController.isDarkMode.value
+                      ? Colors.white
+                      : Colors.black,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
       return ReorderableListView.builder(
-        itemCount: filteredTasks(selectedIndex.value).length,
+        itemCount: tasks.length,
         onReorder: (oldIndex, newIndex) {
           controller.reorderTask(oldIndex, newIndex);
         },
         itemBuilder: (context, index) {
-          final task = filteredTasks(selectedIndex.value)[index];
+          final task = tasks[index];
           return TaskViewComponent(
             key: ValueKey(task.title),
+            role: widget.roleObj["role"],
             taskTitle: task.title,
             description: task.description,
             isCompleted: task.isCompleted,
